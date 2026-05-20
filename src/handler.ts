@@ -1472,7 +1472,11 @@ export class LoadBalancer extends DurableObject {
 						result.key
 					);
 				} else {
-					await this.ctx.storage.sql.exec('DELETE FROM api_keys WHERE api_key = ?', result.key);
+					await this.ctx.storage.sql.exec(
+						"UPDATE api_key_statuses SET status = 'abnormal', key_group = 'abnormal', failed_count = failed_count + 1, last_checked_at = ? WHERE api_key = ?",
+						Date.now(),
+						result.key
+					);
 				}
 			}
 

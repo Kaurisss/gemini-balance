@@ -109,7 +109,7 @@ export const Render = ({ isAuthenticated, showWarning }: { isAuthenticated: bool
 											id="select-invalid-keys-btn"
 											class="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors shadow-sm ml-2 hidden"
 										>
-											勾选无效密钥
+											勾选异常密钥
 										</button>
 									</div>
 								</div>
@@ -254,6 +254,8 @@ export const Render = ({ isAuthenticated, showWarning }: { isAuthenticated: bool
 												      const row = document.createElement('tr');
 												      row.className = 'hover:bg-slate-50 transition-colors';
 												      row.dataset.key = key.api_key;
+												      row.dataset.status = key.status;
+												      row.dataset.keyGroup = key.key_group;
 												      row.innerHTML = \`
 												        <td class="p-3 w-6"><input type="checkbox" class="key-checkbox rounded border-slate-300" data-key="\${key.api_key}" /></td>
 												        <td class="p-3 font-mono text-sm text-slate-700">\${key.api_key}</td>
@@ -265,6 +267,8 @@ export const Render = ({ isAuthenticated, showWarning }: { isAuthenticated: bool
 												      keysTableBody.appendChild(row);
 												    });
 												  }
+												  const hasAbnormalKeys = keys.some(key => key.status === 'abnormal' || key.key_group === 'abnormal');
+												  selectInvalidKeysBtn.classList.toggle('hidden', !hasAbnormalKeys);
 												  updatePaginationControls();
 												} catch (error) {
 												  keysTableBody.innerHTML = '<tr><td colspan="7" class="p-2 text-center text-red-500">加载失败</td></tr>';
@@ -357,8 +361,7 @@ export const Render = ({ isAuthenticated, showWarning }: { isAuthenticated: bool
 										selectInvalidKeysBtn.addEventListener('click', () => {
 											const rows = keysTableBody.querySelectorAll('tr');
 											rows.forEach(row => {
-												const statusCell = row.querySelector('.status-cell');
-												if (statusCell && statusCell.textContent === '无效') {
+												if (row.dataset.status === 'abnormal' || row.dataset.keyGroup === 'abnormal') {
 													const checkbox = row.querySelector('.key-checkbox');
 													if (checkbox) {
 														checkbox.checked = true;
