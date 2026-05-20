@@ -23,6 +23,12 @@ const API_VERSION = 'v1beta';
 // Google 官方 OpenAI 兼容端点
 const OPENAI_COMPAT_BASE = `${BASE_URL}/${API_VERSION}/openai`;
 
+const isForwardClientKeyEnabled = (value: unknown): boolean => {
+	if (typeof value === 'boolean') return value;
+	if (typeof value !== 'string') return false;
+	return ['true', '1', 'yes', 'on'].includes(value.trim().toLowerCase());
+};
+
 const makeHeaders = (apiKey: string, more?: Record<string, string>) => ({
 	'x-goog-api-client': 'genai-js/0.21.0',
 	...(apiKey && { 'x-goog-api-key': apiKey }),
@@ -338,7 +344,7 @@ export class LoadBalancer extends DurableObject {
 		const authKey = this.env.AUTH_KEY;
 		let targetUrl = `${BASE_URL}${pathname}${search}`;
 
-		if (this.env.FORWARD_CLIENT_KEY_ENABLED) {
+		if (isForwardClientKeyEnabled(this.env.FORWARD_CLIENT_KEY_ENABLED)) {
 			return this.forwardRequestWithLoadBalancing(targetUrl, request);
 		}
 
@@ -408,7 +414,7 @@ export class LoadBalancer extends DurableObject {
 				headers.set('content-type', request.headers.get('content-type')!);
 			}
 
-			if (this.env.FORWARD_CLIENT_KEY_ENABLED) {
+			if (isForwardClientKeyEnabled(this.env.FORWARD_CLIENT_KEY_ENABLED)) {
 				const clientApiKey = this.extractClientApiKey(request, url);
 				if (clientApiKey) {
 					url.searchParams.set('key', clientApiKey);
@@ -585,7 +591,7 @@ export class LoadBalancer extends DurableObject {
 			});
 		}
 
-		if (this.env.FORWARD_CLIENT_KEY_ENABLED) {
+		if (isForwardClientKeyEnabled(this.env.FORWARD_CLIENT_KEY_ENABLED)) {
 			return clientKey;
 		}
 

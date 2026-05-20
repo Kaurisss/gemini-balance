@@ -3,7 +3,7 @@ export function getAuthKey(request: Request, sessionKey?: string): string | unde
     // 先查 cookie
     const cookie = request.headers.get('Cookie');
     if (cookie) {
-        const match = cookie.match(/(?:^|;\\s*)auth-key=([^;]+)/);
+        const match = cookie.match(/(?:^|;\s*)auth-key=([^;]+)/);
         if (match) { try { return decodeURIComponent(match[1]); } catch { return match[1]; } }
     }
     // 再查 Authorization header

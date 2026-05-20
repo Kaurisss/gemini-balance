@@ -32,8 +32,7 @@
 		}
 	],
 	"vars": {
-		"AUTH_KEY": "caishilongexuils2026",
-		"HOME_ACCESS_KEY": "qwe[]\\123",
+		// Set AUTH_KEY and HOME_ACCESS_KEY as Cloudflare secrets or local .dev.vars values.
 		"FORWARD_CLIENT_KEY_ENABLED": false
 	}
 	/**
