@@ -349,24 +349,28 @@ export class LoadBalancer extends DurableObject {
 		}
 
 		// 传统模式：验证 AUTH_KEY
-		if (authKey) {
-			let isAuthorized = false;
-			if (search.includes('key=')) {
-				const urlObj = new URL(targetUrl);
-				const requestKey = urlObj.searchParams.get('key');
-				if (requestKey && requestKey === authKey) {
-					isAuthorized = true;
-				}
-			} else {
-				const requestKey = request.headers.get('x-goog-api-key');
-				if (requestKey && requestKey === authKey) {
-					isAuthorized = true;
-				}
+		if (!authKey) {
+			return new Response('AUTH_KEY is not configured. Set it in Cloudflare environment variables or local .dev.vars.', {
+				status: 500,
+				headers: fixCors({}).headers,
+			});
+		}
+		let isAuthorized = false;
+		if (search.includes('key=')) {
+			const urlObj = new URL(targetUrl);
+			const requestKey = urlObj.searchParams.get('key');
+			if (requestKey && requestKey === authKey) {
+				isAuthorized = true;
 			}
+		} else {
+			const requestKey = request.headers.get('x-goog-api-key');
+			if (requestKey && requestKey === authKey) {
+				isAuthorized = true;
+			}
+		}
 
-			if (!isAuthorized) {
-				return new Response('Unauthorized', { status: 401, headers: fixCors({}).headers });
-			}
+		if (!isAuthorized) {
+			return new Response('Unauthorized', { status: 401, headers: fixCors({}).headers });
 		}
 		return this.forwardRequestWithLoadBalancing(targetUrl, request);
 	}
@@ -597,6 +601,12 @@ export class LoadBalancer extends DurableObject {
 
 		// 传统模式：验证 AUTH_KEY
 		const authKey = this.env.AUTH_KEY;
+		if (!authKey) {
+			return new Response('AUTH_KEY is not configured. Set it in Cloudflare environment variables or local .dev.vars.', {
+				status: 500,
+				headers: fixCors({}).headers,
+			});
+		}
 		if (authKey && clientKey !== authKey) {
 			return new Response('Unauthorized', { status: 401, headers: fixCors({}).headers });
 		}

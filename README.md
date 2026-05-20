@@ -41,7 +41,13 @@
     npx wrangler login
     ```
 
-4.  **部署到 Cloudflare**
+4.  **配置环境变量**
+    ```bash
+    npx wrangler secret put AUTH_KEY
+    npx wrangler secret put HOME_ACCESS_KEY
+    ```
+
+5.  **部署到 Cloudflare**
     ```bash
     pnpm run deploy
     ```
@@ -57,8 +63,11 @@
     *   在左侧导航栏中，进入 `Workers & Pages`。
     *   点击 `创建应用程序` -> `连接到 Git`。
     *   选择你刚刚 Fork 的仓库。
+    *   在环境变量中配置 `AUTH_KEY` 和 `HOME_ACCESS_KEY`。
     *   在“构建和部署”设置中，Cloudflare 通常会自动检测到这是一个 Worker 项目，无需额外配置。
     *   点击 `保存并部署`。
+
+默认配置会部署到 Cloudflare 提供的 `workers.dev` 地址。若要绑定自定义域名，请先把域名接入当前 Cloudflare 账户，再在 `wrangler.jsonc` 中启用 `routes` 示例配置。
 
 ## 🔑 API 密钥管理
 

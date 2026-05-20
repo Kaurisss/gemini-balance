@@ -8,6 +8,9 @@ const app = new Hono<{ Bindings: Env }>();
 
 // 管理页面访问，校验 HOME_ACCESS_KEY
 app.get('/', (c) => {
+	if (!c.env.HOME_ACCESS_KEY) {
+		return c.text('HOME_ACCESS_KEY is not configured. Set it in Cloudflare environment variables or local .dev.vars.', 500);
+	}
 	const sessionKey = getCookie(c, 'auth-key');
 	const authKey = getAuthKey(c.req.raw, sessionKey);
 	if (authKey !== c.env.HOME_ACCESS_KEY) {
@@ -20,6 +23,9 @@ app.get('/', (c) => {
 
 // 登录接口，校验 HOME_ACCESS_KEY，登录成功后写入 cookie
 app.post('/', async (c) => {
+	if (!c.env.HOME_ACCESS_KEY) {
+		return c.json({ success: false, error: 'HOME_ACCESS_KEY is not configured.' }, 500);
+	}
 	const { key } = await c.req.json();
 	if (key === c.env.HOME_ACCESS_KEY) {
 		setCookie(c, 'auth-key', key, { maxAge: 60 * 60 * 24 * 30, path: '/' });

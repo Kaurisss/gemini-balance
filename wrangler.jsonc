@@ -25,12 +25,13 @@
 	"observability": {
 		"enabled": true
 	},
-	"routes": [
-		{
-			"pattern": "balance.exuils.com",
-			"custom_domain": true
-		}
-	],
+	// Optional custom domain. Uncomment only after the domain is added to your Cloudflare account.
+	// "routes": [
+	// 	{
+	// 		"pattern": "your-domain.example.com",
+	// 		"custom_domain": true
+	// 	}
+	// ],
 	"vars": {
 		// Set AUTH_KEY and HOME_ACCESS_KEY as Cloudflare secrets or local .dev.vars values.
 		"FORWARD_CLIENT_KEY_ENABLED": false
